@@ -22,7 +22,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public String registerUser(UserRequestDto requestDto) {
+    public String registerUser(UserRequestDto requestDto, HttpServletRequest request, String role) {
         // 이메일 중복 체크
         userRepository.findByEmail(requestDto.email()).ifPresent(user -> {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
@@ -35,11 +35,16 @@ public class UserService {
                 .password(requestDto.password())
                 .phone(requestDto.phone())
                 .active("active")
+                .role(role)
                 .build();
 
         userRepository.save(user);
+        HttpSession session = request.getSession(true); // 세션이 없으면 새로 생성
+        session.setAttribute("email", user.getEmail());
         return "회원가입 성공";
     }
+
+
 
     public String login(LoginRequestDto loginRequestDto, HttpServletRequest request) {
         User user = userRepository.findByEmail(loginRequestDto.email())

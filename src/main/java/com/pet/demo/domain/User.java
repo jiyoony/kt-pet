@@ -12,10 +12,14 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "users")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Entity
 public class User {
 
@@ -23,6 +27,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
+    @Column(name = "role", nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'user'") // Default 값은 user
+    private String role;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -39,13 +46,17 @@ public class User {
     @Column(name = "active", nullable = false)
     private String active;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Petsitter> petsitters = new ArrayList<>();
+
     @Builder
-    public User(String name, String email, String password, String phone, String active) {
+    public User(String name, String email, String password, String phone, String active, String role) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.phone = phone;
         this.active = active;
+        this.role = role;
     }
 
     public void changeUserInfo(UserInfoDto userInfoDto){

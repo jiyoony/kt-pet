@@ -9,7 +9,9 @@ import com.pet.demo.service.UserService;
 import com.pet.demo.domain.User;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
-
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/user")
@@ -29,17 +31,34 @@ public class UserController {
     private final UserService userService;
 
 
-    // 회원가입
+    // 유저 회원가입
     @PostMapping("/register")
-    public String register(@RequestBody UserRequestDto requestDto) {
-        return userService.registerUser(requestDto);
+    public String register(@RequestBody UserRequestDto requestDto,  HttpServletRequest request) {
+        return userService.registerUser(requestDto, request, "user");
         
+    }
+
+    // 펫시터 회원가입
+    @PostMapping("/petsitter/register")
+    public String registerPetsitter(@RequestBody UserRequestDto requestDto, HttpServletRequest request) {
+        return userService.registerUser(requestDto, request, "petsitter");
     }
 
     @PostMapping("/login")
     public String login(@RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request) {
+        log.info("ss");
+        log.info("로그인 요청"+loginRequestDto);
         return userService.login(loginRequestDto, request);
         
+    }
+
+    @GetMapping("/check-login")
+    public ResponseEntity<?> checkLogin(HttpSession session) {
+        String email = (String) session.getAttribute("email");
+        if (email != null) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     @GetMapping("/info")
