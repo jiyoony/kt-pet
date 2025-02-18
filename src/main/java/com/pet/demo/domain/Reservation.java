@@ -20,11 +20,13 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private String user_id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "petsitter_id", nullable = false)
-    private String petsitter_id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "petsitter_id", nullable = false)
+    private Petsitter petsitter;
 
     @Column(name = "start_at", nullable = false)
     private LocalDateTime startAt;
@@ -42,13 +44,17 @@ public class Reservation {
     private String location;
 
     @Builder
-    public Reservation(String user_id, String petsitter_id, LocalDateTime startAt, LocalDateTime endAt, String status, Integer price, String location) {
-        this.user_id = user_id;
-        this.petsitter_id = petsitter_id;
+    public Reservation(User user, Petsitter petsitter, LocalDateTime startAt, LocalDateTime endAt, String status, Integer price, String location) {
+        this.user = user;
+        this.petsitter = petsitter;
         this.startAt = startAt;
         this.endAt = endAt;
         this.status = status;
         this.price = price;
         this.location = location;
+    }
+
+    public Long getPetsitterId() {
+        return petsitter.getId();
     }
 } 

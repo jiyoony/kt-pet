@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,5 +43,24 @@ public class ReservationController {
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<List<ReservationResponseDto>> getMyReservations(HttpServletRequest request) {
+        String userEmail = (String) request.getSession().getAttribute("email");
+        if (userEmail == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
+        List<ReservationResponseDto> myReservations = reservationService.getReservationsByUserEmail(userEmail);
+        return ResponseEntity.ok(myReservations);
+    }
+
+    @GetMapping("/petsitter")
+    public ResponseEntity<List<ReservationResponseDto>> getReservationsByPetsitterId(HttpServletRequest request) {
+        String userEmail = (String) request.getSession().getAttribute("email");
+        if (userEmail == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
+        return ResponseEntity.ok(reservationService.getReservationsByPetsitterId(userEmail));
     }
 } 

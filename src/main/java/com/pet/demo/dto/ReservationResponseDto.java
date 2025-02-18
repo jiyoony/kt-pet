@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 
 public record ReservationResponseDto(
     Long id,
-    String userId,
-    String petsitterId,
+    Long userId,
+    Long petsitterId,
     LocalDateTime startAt,
     LocalDateTime endAt,
     String status,
@@ -16,8 +16,8 @@ public record ReservationResponseDto(
     public static ReservationResponseDto from(Reservation reservation) {
         return new ReservationResponseDto(
             reservation.getId(),
-            reservation.getUser_id(),
-            reservation.getPetsitter_id(),
+            reservation.getUser().getId(),
+            reservation.getPetsitter().getId(),
             reservation.getStartAt(),
             reservation.getEndAt(),
             reservation.getStatus(),

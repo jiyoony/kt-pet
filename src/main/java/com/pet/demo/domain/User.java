@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +27,7 @@ public class User {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "role", nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'user'") // Default 값은 user
+    @Column(name = "role", nullable = false) // Default 값은 user
     private String role;
 
     @Column(name = "name", nullable = false)

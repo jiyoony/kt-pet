@@ -1,9 +1,13 @@
 package com.pet.demo.service;
 
 import com.pet.demo.domain.Reservation;
+import com.pet.demo.domain.User;
+import com.pet.demo.domain.Petsitter;
 import com.pet.demo.dto.ReservationRequestDto;
 import com.pet.demo.dto.ReservationResponseDto;
 import com.pet.demo.repository.ReservationRepository;
+import com.pet.demo.repository.UserRepository;
+import com.pet.demo.repository.PetsitterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +21,18 @@ import java.util.stream.Collectors;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
-
+    private final UserRepository userRepository;
+    private final PetsitterRepository petsitterRepository;
     public ReservationResponseDto createReservation(ReservationRequestDto requestDto) {
+        User user = userRepository.findById(requestDto.userId())
+                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+
+        Petsitter petsitter = petsitterRepository.findById(requestDto.petsitterId())
+                .orElseThrow(() -> new IllegalArgumentException("펫시터가 존재하지 않습니다."));
+
         Reservation reservation = Reservation.builder()
-                .user_id(requestDto.userId())
-                .petsitter_id(requestDto.petsitterId())
+                .user(user)
+                .petsitter(petsitter)
                 .startAt(requestDto.startAt())
                 .endAt(requestDto.endAt())
                 .status(requestDto.status())
@@ -50,8 +61,8 @@ public class ReservationService {
 
         reservation = Reservation.builder()
                 .id(reservation.getId())
-                .user_id(requestDto.userId())
-                .petsitter_id(requestDto.petsitterId())
+                .user(userRepository.findById(requestDto.userId()).orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다.")))
+                .petsitter(petsitterRepository.findById(requestDto.petsitterId()).orElseThrow(() -> new IllegalArgumentException("펫시터가 존재하지 않습니다.")))
                 .startAt(requestDto.startAt())
                 .endAt(requestDto.endAt())
                 .status(requestDto.status())
@@ -66,5 +77,19 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("예약이 존재하지 않습니다."));
         reservationRepository.delete(reservation);
+    }
+
+    public List<ReservationResponseDto> getReservationsByUserEmail(String userEmail) {
+        return reservationRepository.findAll().stream()
+                .filter(reservation -> reservation.getUser().getEmail().equals(userEmail))
+                .map(ReservationResponseDto::from)
+                .collect(Collectors.toList());
+    }
+
+    public List<ReservationResponseDto> getReservationsByPetsitterId(String userEmail) {
+        return reservationRepository.findAll().stream()
+                .filter(reservation -> reservation.getPetsitter().getUser().getEmail().equals(userEmail))
+                .map(ReservationResponseDto::from)
+                .collect(Collectors.toList());
     }
 } 

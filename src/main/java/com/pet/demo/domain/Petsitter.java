@@ -24,7 +24,7 @@ public class Petsitter {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(nullable = false)
+    @Column(name = "price", nullable = false)
     private Integer price;
 
     @Column(name = "start_at", nullable = false)

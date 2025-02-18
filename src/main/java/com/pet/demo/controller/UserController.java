@@ -46,7 +46,6 @@ public class UserController {
 
     @PostMapping("/login")
     public String login(@RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request) {
-        log.info("ss");
         log.info("로그인 요청"+loginRequestDto);
         return userService.login(loginRequestDto, request);
         
