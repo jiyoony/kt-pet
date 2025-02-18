@@ -54,6 +54,10 @@ public class Reservation {
         this.location = location;
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public Long getPetsitterId() {
         return petsitter.getId();
     }

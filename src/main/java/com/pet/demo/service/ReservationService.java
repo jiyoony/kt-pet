@@ -11,6 +11,7 @@ import com.pet.demo.repository.PetsitterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +24,10 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
     private final PetsitterRepository petsitterRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepositoryAutowired;
+
     public ReservationResponseDto createReservation(ReservationRequestDto requestDto) {
         User user = userRepository.findById(requestDto.userId())
                 .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
@@ -91,5 +96,11 @@ public class ReservationService {
                 .filter(reservation -> reservation.getPetsitter().getUser().getEmail().equals(userEmail))
                 .map(ReservationResponseDto::from)
                 .collect(Collectors.toList());
+    }
+
+    public void updateReservationStatus(Long reservationId, String status) {
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new RuntimeException("Reservation not found"));
+        reservation.setStatus(status);
+        reservationRepository.save(reservation);
     }
 } 
